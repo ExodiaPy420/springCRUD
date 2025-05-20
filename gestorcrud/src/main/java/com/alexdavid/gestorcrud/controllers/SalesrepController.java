@@ -1,6 +1,5 @@
 package com.alexdavid.gestorcrud.controllers;
 
-
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +23,13 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/salesrep")
 public class SalesrepController {
+
     //primero tenemos que requestear el repositorio
     @Autowired
     private SalesrepRepository salesRepo;
 
     //así podemos o usar "/salesrep" o "/salesrep/"
-    @GetMapping({"","/"})
+    @GetMapping({"", "/"})
     //queremos que devuelva la String del nombre del archivo html apra poder cargar el index.html de la carpeta de salesrep/comerciales
     public String getSalesrep(Model model) {
         //aquí estamos cogiendo todos los clientes del repositorio y los ordenamos mostrando primero los añadidos recientemente, esta lista luego la pasaremos a la página
@@ -38,7 +38,7 @@ public class SalesrepController {
         model.addAttribute("salesreplist", salesreps);
 
         return "salesrep/index";
-        
+
     }
 
     @GetMapping("/create")
@@ -50,15 +50,15 @@ public class SalesrepController {
     }
 
     @PostMapping("/create")
-    public String createSalesrep (@Valid @ModelAttribute SalesrepDto salesrepDto, BindingResult result) {
+    public String createSalesrep(@Valid @ModelAttribute SalesrepDto salesrepDto, BindingResult result) {
 
         if (salesRepo.findByEmail(salesrepDto.getEmail()) != null) {
             result.addError(
-                new FieldError("salesrepDto", "email", salesrepDto.getEmail(), false, null, null, "Este correo electrónico está ya en uso")
+                    new FieldError("salesrepDto", "email", salesrepDto.getEmail(), false, null, null, "Este correo electrónico está ya en uso")
             );
         }
 
-        if (result.hasErrors ()) {
+        if (result.hasErrors()) {
             return "salesrep/create";
         }
 
@@ -70,10 +70,9 @@ public class SalesrepController {
         sales.setHiringDate(new Date());
 
         salesRepo.save(sales);
-        
+
         return "redirect:/salesrep";
     }
-
 
     @GetMapping("/edit")
     public String editSalesrep(Model model, @RequestParam int id) {
@@ -83,10 +82,10 @@ public class SalesrepController {
         }
 
         SalesrepDto salesrepDto = new SalesrepDto();
-        salesrepDto.setFullName(salesrepDto.getFullName());
-        salesrepDto.setEmail(salesrepDto.getEmail());
-        salesrepDto.setPhoneNum(salesrepDto.getPhoneNum());
-        salesrepDto.setStatus(salesrepDto.getStatus());
+        salesrepDto.setFullName(sales.getFullName());
+        salesrepDto.setEmail(sales.getEmail());
+        salesrepDto.setPhoneNum(sales.getPhoneNum());
+        salesrepDto.setStatus(sales.getStatus());
 
         model.addAttribute("salesrep", sales);
         model.addAttribute("salesrepDto", salesrepDto);
@@ -95,11 +94,11 @@ public class SalesrepController {
     }
 
     @PostMapping("/edit")
-    public String editSalesrep (
-        Model model,
-        @RequestParam int id,
-        @Valid @ModelAttribute SalesrepDto salesrepDto,
-        BindingResult result
+    public String editSalesrep(
+            Model model,
+            @RequestParam int id,
+            @Valid @ModelAttribute SalesrepDto salesrepDto,
+            BindingResult result
     ) {
 
         Salesrep sales = salesRepo.findById(id).orElse(null);
@@ -121,8 +120,8 @@ public class SalesrepController {
         try {
             salesRepo.save(sales);
         } catch (Exception e) {
-            result.addError (
-                new FieldError("salesrepDto", "email", salesrepDto.getEmail(), false, null, null, "Correo electrónico ya en uso")
+            result.addError(
+                    new FieldError("salesrepDto", "email", salesrepDto.getEmail(), false, null, null, "Correo electrónico ya en uso")
             );
 
             return "salesrep/edit";
@@ -130,7 +129,6 @@ public class SalesrepController {
 
         return "redirect:/salesrep";
     }
-
 
     @GetMapping("/delete")
     public String deleteSalesrep(@RequestParam int id) {
@@ -141,7 +139,7 @@ public class SalesrepController {
         }
 
         return "redirect:/salesrep";
-        
+
     }
 
 }
